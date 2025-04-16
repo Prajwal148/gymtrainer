@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+  .hero-overlay {
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #ffffff;
+    padding: 3rem;
+    border-radius: 20px;
+    max-width: 750px;
+    width: 100%;
+    margin-top: 2rem;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+  }
+
+        .hero-overlay h1,
+        .hero-overlay h2,
+        .hero-overlay h3,
+        .hero-overlay h4,
+        .hero-overlay h5,
+        .hero-overlay h6,
+        .hero-overlay p,
+        .hero-overlay a,
+        .hero-overlay span,
+        .hero-overlay strong,
+        .hero-overlay .lead {
+            color: #ffffff !important;
+        }
+
+        .hero-overlay p {
+            font-size: 1.1rem;
+        }
+
+        .hero-overlay .btn {
+            font-size: 1.1rem;
+        }
+</style>
+
+<div class="container mt-5 text-center">
+  <h1 class="mb-4 fw-bold text-primary">Welcome to GYM_Trainer</h1>
+
+  <p class="lead mb-4">
+    Your personalized fitness assistant — built to help you stay on track with your health goals.
+  </p>
+
+  <div class="fs-5 mb-4">
+    <p>Create a profile tailored to your lifestyle and goals</p>
+    <p>Get a customized <strong>diet plan</strong> based on your BMI and habits</p>
+    <p>Receive a weekly <strong>workout plan</strong> matching your experience level</p>
+    <p>Track your BMI and improve it over time</p>
+  </div>
+
+  <a href="{% url 'users:login' %}" class="btn btn-success btn-lg px-5 py-3 rounded-pill shadow">
+    Get Started Now
+  </a>
+</div>
+{% endblock %}

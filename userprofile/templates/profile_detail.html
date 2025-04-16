@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="card shadow rounded-4">
+    <div class="card-header bg-primary text-white text-center py-3 rounded-top-4">
+      <h3 class="mb-0">{{ profile.first_name }}'s Profile</h3>
+    </div>
+
+    <div class="card-body">
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item"><strong>Date of Birth:</strong> {{ profile.date_of_birth }}</li>
+        <li class="list-group-item"><strong>Height:</strong> {{ profile.height }} CM</li>
+        <li class="list-group-item"><strong>Weight:</strong> {{ profile.weight }} KG</li>
+        <li class="list-group-item"><strong>Age:</strong> {{ age }} years</li>
+      </ul>
+        <div class="mt-5">
+
+          <p class="text-center mt-3">
+            Your BMI: <strong>{{ bmi }}</strong> - {{ profile.get_bmi_label }}
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-4 d-flex flex-wrap gap-3 justify-content-center">
+        <a href="{% url 'profile_update' profile.pk %}" class="btn btn-warning">Edit Profile</a>
+
+        {% if not profile.diet_plan %}
+          <a href="{% url 'generate_diet_plan' profile.pk %}" class="btn btn-warning">Generate Diet Plan</a>
+        {% endif %}
+
+        {% if not profile.workout_plan %}
+          <a href="{% url 'generate_workout_plan' profile.pk %}" class="btn btn-warning">Generate Workout Plan</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const bmi = {{ bmi|default:0 }};
+    const indicator = document.getElementById("bmiIndicator");
+    const min = 15;
+    const max = 45;
+    const percent = Math.max(0, Math.min(100, ((bmi - min) / (max - min)) * 100));
+    indicator.style.left = `calc(${percent}% - 2px)`;
+  });
+</script>
+{% endblock %}

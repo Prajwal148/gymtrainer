@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <style>
+  .hero-overlay {
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #ffffff;
+    padding: 3rem;
+    border-radius: 20px;
+    max-width: 750px;
+    width: 100%;
+    margin-top: 2rem;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+  }
+
+        .hero-overlay h1,
+        .hero-overlay h2,
+        .hero-overlay h3,
+        .hero-overlay h4,
+        .hero-overlay h5,
+        .hero-overlay h6,
+        .hero-overlay p,
+        .hero-overlay a,
+        .hero-overlay span,
+        .hero-overlay strong,
+        .hero-overlay .lead {
+            color: #ffffff !important;
+        }
+
+        .hero-overlay p {
+            font-size: 1.1rem;
+        }
+
+        .hero-overlay .btn {
+            font-size: 1.1rem;
+        }
+</style>
+
+<div class="container mt-5 text-center">
+  {% if profile %}
+    <h1 class="mb-3">Hi {{ profile.first_name }} </h1>
+    <p class="lead fw-semibold mb-4">
+      Welcome back to <span class="text-primary">GYM_Trainer</span>!
+    </p>
+    <p class="mb-4 fs-5 fst-italic text-muted">
+      “Success isn’t always about greatness. It’s about consistency. Consistent hard work leads to success. Greatness will come.”
+    </p>
+
+    <a href="{% url 'profile_update' profile.pk %}" class="btn btn-lg btn-warning px-5 py-3 rounded-pill shadow">
+      Update My Profile
+    </a>
+
+  {% else %}
+    <h1 class="mb-3">Hi {{ request.user.username }} </h1>
+    <p class="lead fw-semibold mb-4">
+      Welcome to <span class="text-primary">GYM_Trainer</span> — your personal fitness companion!
+    </p>
+    <p class="mb-4 fs-5 fst-italic text-muted">
+      “Every champion was once a contender that refused to give up.”<br>
+      Let’s begin your transformation journey! Create your profile and unlock your personalized <strong>diet</strong> and <strong>workout</strong> plans.
+    </p>
+
+    <a href="{% url 'profile_create' %}" class="btn btn-lg btn-success px-5 py-3 rounded-pill shadow">
+      Start My Fitness Journey
+    </a>
+  {% endif %}
+</div>
+{% endblock %}
