@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .views import create_trainer
 
 urlpatterns = [
     # List all trainers
@@ -12,5 +13,7 @@ urlpatterns = [
     path('my_trainer/', views.my_trainer, name='my_trainer'),
 
     # Trainer dashboard
-    path('dashboard/', views.trainer_dashboard, name='trainer_dashboard'),  # This should be the path to dashboard
+    path('dashboard/', views.trainer_dashboard, name='trainer_dashboard'),
+    path('create/', create_trainer, name='trainer_create'),
+
 ]

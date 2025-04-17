@@ -1,4 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
+
+from .forms import TrainerForm
 from .models import Trainer
 from django.contrib.auth.decorators import login_required
 from userprofile.models import UserProfile
@@ -52,3 +54,16 @@ def trainer_dashboard(request):
         'users': users,
         'selected_user': selected_user
     })
+
+@login_required
+def create_trainer(request):
+    if request.method == 'POST':
+        form = TrainerForm(request.POST, request.FILES)
+        if form.is_valid():
+            trainer = form.save(commit=False)
+            trainer.user = request.user
+            trainer.save()
+            return redirect('trainer_detail', trainer_id=trainer.id)
+    else:
+        form = TrainerForm()
+    return render(request, 'trainers/trainer_create.html', {'form': form})

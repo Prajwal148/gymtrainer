@@ -29,17 +29,6 @@
             color: #ffffff !important;
         }
 
-        .btn-simple {
-            background: none;
-            color: #ffffff;
-            border: none;
-            padding: 0.5rem 1rem;
-        }
-
-        .btn-simple:hover {
-            text-decoration: underline;
-        }
-
         .background-image-wrapper {
             background: url("{% static 'Images/hero.png' %}") no-repeat center center fixed;
             background-size: cover;
@@ -50,7 +39,6 @@
             align-items: flex-start;
         }
 
-        /* Custom Radio Button Styling */
         .custom-radio input {
             display: none;
         }
@@ -72,13 +60,11 @@
             color: white;
         }
 
-        /* Custom border when hovered */
         .custom-radio label:hover {
             background-color: #f1f1f1;
             border-color: #2c7a2c;
         }
 
-        /* Circle inside the custom radio button */
         .custom-radio label::before {
             content: '';
             position: absolute;
@@ -97,14 +83,24 @@
             background-color: #4CAF50;
         }
 
-        /* Optional: Adjust spacing between the radio buttons */
         .custom-radio + .custom-radio {
             margin-left: 20px;
         }
+
+        .navbar-buttons .btn {
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 767.98px) {
+            .navbar-buttons {
+                flex-direction: column !important;
+                align-items: flex-start;
+                width: 100%;
+            }
+        }
     </style>
 
-    {% block extra_styles %}
-    {% endblock %}
+    {% block extra_styles %}{% endblock %}
 </head>
 <body>
 
@@ -112,45 +108,51 @@
 <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
         <a class="navbar-brand" href="{% url 'home' %}">GYM_Trainer</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive"
+                aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-        <div class="d-flex">
-            {% if user.is_authenticated %}
-                {% if user.userprofile %}
-                    <a href="{% url 'profile_detail' user.userprofile.pk %}" class="btn btn-outline-light">My Profile</a>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarResponsive">
+            <div class="d-flex flex-wrap align-items-center gap-2 navbar-buttons">
+                {% if user.is_authenticated %}
+                    {% if user.is_trainer and user.trainer %}
+                        <a href="{% url 'trainer_create' %}" class="btn btn-outline-light">Trainer Create</a>
+                    {% elif user.userprofile %}
+                        <a href="{% url 'profile_detail' user.userprofile.pk %}" class="btn btn-outline-light">My Profile</a>
+                    {% else %}
+                        <a href="{% url 'profile_create' %}" class="btn btn-success">Create Profile</a>
+                    {% endif %}
+
+                    {% if request.user.userprofile.diet_plan %}
+                        <a href="{% url 'generate_diet_plan' request.user.userprofile.pk %}" class="btn btn-outline-light">Diet Plan</a>
+                    {% endif %}
+                    {% if request.user.userprofile.workout_plan %}
+                        <a href="{% url 'generate_workout_plan' request.user.userprofile.pk %}" class="btn btn-outline-light">Workout Plan</a>
+                    {% endif %}
+
+                    {% if user.userprofile.selected_trainer %}
+                        <a href="{% url 'my_trainer' %}" class="btn btn-outline-light">My Trainer: {{ user.userprofile.selected_trainer.Firstname }}</a>
+                    {% else %}
+                        <a href="{% url 'trainer_list' %}" class="btn btn-outline-light">Select a Trainer</a>
+                    {% endif %}
+
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button class="btn btn-outline-light">Logout</button>
+                    </form>
                 {% else %}
-                    <a href="{% url 'profile_create' %}" class="btn btn-success mx-1">Create Profile</a>
+                    <a href="{% url 'users:login' %}" class="btn btn-outline-light">Log In</a>
+                    <a href="{% url 'users:signup' %}" class="btn btn-outline-light">Sign Up</a>
                 {% endif %}
-
-                {% if request.user.userprofile.diet_plan %}
-                    <a href="{% url 'generate_diet_plan' request.user.userprofile.pk %}" class="btn btn-outline-light">Diet Plan</a>
-                {% endif %}
-                {% if request.user.userprofile.workout_plan %}
-                    <a href="{% url 'generate_workout_plan' request.user.userprofile.pk %}" class="btn btn-outline-light">Workout Plan</a>
-                {% endif %}
-
-                <!-- Check if the user has a selected trainer -->
-                {% if user.userprofile.selected_trainer %}
-                    <a  href="{% url 'my_trainer' %}" class="btn btn-outline-light">My Trainer: {{ user.userprofile.selected_trainer.Firstname }}</a>
-                {% else %}
-                    <a  href="{% url 'trainer_list' %}" class="btn btn-outline-light">Select a Trainer</a>
-                {% endif %}
-
-                <!-- Logout Button -->
-                <form method="post" action="{% url 'logout' %}" class="d-inline mx-1">
-                    {% csrf_token %}
-                    <button class="btn btn-outline-light">Logout</button>
-                </form>
-            {% else %}
-                <a href="{% url 'users:login' %}" class="btn btn-outline-light mx-1">Log In</a>
-                <a href="{% url 'users:signup' %}" class="btn btn-outline-light mx-1">Sign Up</a>
-            {% endif %}
+            </div>
         </div>
     </div>
 </nav>
 
 <!-- Page Background + Overlay Content -->
 <div class="background-image-wrapper">
-    <div class="hero-overlay">
+    <div class="hero-overlay w-100">
         {% block content %}
         {% endblock %}
     </div>

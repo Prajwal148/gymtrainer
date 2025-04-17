@@ -5,7 +5,7 @@ from gym_trainer import settings
 
 
 class Trainer(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='trainer')
     Firstname = models.CharField(max_length=100)
     Lastname = models.CharField(max_length=100)
     specialization = models.CharField(max_length=100)
@@ -15,9 +15,3 @@ class Trainer(models.Model):
     def __str__(self):
         return f"{self.Firstname} {self.Lastname}"
 
-class UserProfile(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='user_profile')  # Added related_name
-    selected_trainer = models.ForeignKey(Trainer, on_delete=models.SET_NULL, null=True, blank=True, related_name='trainers')  # Added related_name
-
-    def __str__(self):
-        return self.user.username
