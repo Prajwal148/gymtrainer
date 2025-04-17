@@ -5,6 +5,7 @@ from gym_trainer import settings
 
 
 class Trainer(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     Firstname = models.CharField(max_length=100)
     Lastname = models.CharField(max_length=100)
     specialization = models.CharField(max_length=100)
