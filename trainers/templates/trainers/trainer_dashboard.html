@@ -1,47 +1,83 @@
 {% extends 'base.html' %}
+{% load custom_filters %}
 
 {% block content %}
-    <div class="container mt-5">
-        <h1 class="text-center">Trainer Dashboard</h1>
+<style>
+    select.form-control,
+    select.form-control option {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        border: 1px solid #ced4da;
+        padding: 10px;
+    }
 
-        <!-- Dropdown to select a user -->
-        <form method="POST" class="mb-4">
+    select.form-control:focus {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        outline: none;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    }
+
+    textarea.form-control {
+        background-color: #fff !important;
+        color: #000 !important;
+    }
+</style>
+
+<div class="container mt-5">
+    <h1 class="text-center text-light">Trainer Dashboard</h1>
+
+    <!-- User selection dropdown -->
+    <form method="POST" action="{% url 'trainer_dashboard' %}" class="mb-4">
+        {% csrf_token %}
+        <select name="user_id" class="form-control" onchange="this.form.submit()">
+            <option value="">Select a User</option>
+            {% for user in users %}
+                <option value="{{ user.id }}" {% if selected_user and selected_user.id == user.id %}selected{% endif %}>
+                    {{ user.first_name }} {{ user.last_name }}
+                </option>
+            {% endfor %}
+        </select>
+    </form>
+
+    {% if selected_user %}
+    <div class="card shadow-lg p-4 mb-4 bg-light">
+        <h2 class="text-center">{{ selected_user.first_name }} {{ selected_user.last_name }}</h2>
+        <p><strong>Age:</strong> {{ selected_user.calculate_age }} years</p>
+        <p><strong>BMI:</strong> {{ selected_user.calculate_bmi }} - {{ selected_user.get_bmi_label }}</p>
+        <p><strong>Food Habits:</strong> {{ selected_user.food_habits }}</p>
+        <p><strong>Workout Experience:</strong> {{ selected_user.workout_experience }}</p>
+
+        <!-- Diet & Workout Plans -->
+        <form method="POST" action="{% url 'trainer_dashboard' %}">
             {% csrf_token %}
-            <select name="user_id" class="form-control" onchange="this.form.submit()">
-                <option value="">Select a User</option>
-                {% for user in users %}
-                    <option value="{{ user.id }}" {% if selected_user == user %}selected{% endif %}>
-                        {{ user.user.first_name }} {{ user.user.last_name }}
-                    </option>
-                {% endfor %}
-            </select>
+            <input type="hidden" name="user_id" value="{{ selected_user.id }}">
+
+            <h5 class="mt-4">Diet Plan (per day)</h5>
+            {% for day in days %}
+                <div class="form-group mt-2">
+                    <label for="diet_{{ day }}">{{ day }}</label>
+                    <textarea name="diet_{{ day }}" class="form-control" rows="2" placeholder="Enter diet for {{ day }}...">
+                        {{ selected_user.diet_plan|get_item:day }}
+                    </textarea>
+                </div>
+            {% endfor %}
+
+            <h5 class="mt-4">Workout Plan (per day)</h5>
+            {% for day in days %}
+                <div class="form-group mt-2">
+                    <label for="workout_{{ day }}">{{ day }}</label>
+                    <textarea name="workout_{{ day }}" class="form-control" rows="2" placeholder="Enter workout for {{ day }}...">
+                        {{ selected_user.workout_plan|get_item:day }}
+                    </textarea>
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="btn btn-primary w-100 mt-4">Save Changes</button>
         </form>
-
-        {% if selected_user %}
-            <!-- Display user profile and allow diet/workout plan editing -->
-            <div class="card shadow-lg p-4 mb-4">
-                <h2 class="text-center">{{ selected_user.user.first_name }} {{ selected_user.user.last_name }}</h2>
-                <p><strong>Age:</strong> {{ selected_user.calculate_age }} years</p>
-                <p><strong>BMI:</strong> {{ selected_user.calculate_bmi }} - {{ selected_user.get_bmi_label }}</p>
-                <p><strong>Food Habits:</strong> {{ selected_user.food_habits }}</p>
-                <p><strong>Workout Experience:</strong> {{ selected_user.workout_experience }}</p>
-
-                <!-- Form for editing diet and workout plans -->
-                <form method="POST">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <label for="diet_plan">Diet Plan</label>
-                        <textarea name="diet_plan" class="form-control" rows="5">{{ selected_user.diet_plan }}</textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="workout_plan">Workout Plan</label>
-                        <textarea name="workout_plan" class="form-control" rows="5">{{ selected_user.workout_plan }}</textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100 mt-3">Save Changes</button>
-                </form>
-            </div>
-        {% else %}
-            <p class="text-center">Select a user from the dropdown to see and edit their details.</p>
-        {% endif %}
     </div>
+    {% else %}
+        <p class="text-center text-light">Select a user from the dropdown to view and update plans.</p>
+    {% endif %}
+</div>
 {% endblock %}
