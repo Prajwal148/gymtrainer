@@ -2,7 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models  # Correct import for models
 
 class NewUser(AbstractUser):
-    is_trainer = models.BooleanField(default=False)  # Use the correct BooleanField from django.db.models
+    is_trainer = models.BooleanField(default=False)
     class Meta:
         verbose_name = "User"
         verbose_name_plural = "Users"
