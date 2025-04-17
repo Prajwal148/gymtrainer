@@ -5,12 +5,10 @@ from .models import Trainer
 from userprofile.models import UserProfile
 import json
 
-
 # List all trainers
 def trainer_list(request):
     trainers = Trainer.objects.all()
     return render(request, 'trainers/trainer_list.html', {'trainers': trainers})
-
 
 # Select a trainer and save it to the user's profile
 @login_required
@@ -20,7 +18,6 @@ def select_trainer(request, trainer_id):
     request.user.userprofile.save()
     return redirect('my_trainer')
 
-
 # Display the user's selected trainer
 @login_required
 def my_trainer(request):
@@ -28,7 +25,6 @@ def my_trainer(request):
     if trainer:
         return render(request, 'trainers/trainer_detail.html', {'trainer': trainer})
     return redirect('trainer_list')
-
 
 # Trainer profile creation
 @login_required
@@ -39,12 +35,34 @@ def create_trainer(request):
             trainer = form.save(commit=False)
             trainer.user = request.user
             trainer.save()
-            return redirect('trainer_detail', trainer_id=trainer.id)
+            return redirect('trainer_detail', pk=trainer.pk)  # ✅ fixed key
     else:
         form = TrainerForm()
     return render(request, 'trainers/trainer_create.html', {'form': form})
 
+# Trainer detail (used in navbar "View Profile")
+@login_required
+def trainer_detail(request, pk):
+    trainer = get_object_or_404(Trainer, pk=pk)
+    return render(request, 'trainers/trainer_detail.html', {'trainer': trainer})
 
+# Trainer update (used in navbar "Edit Profile")
+@login_required
+def update_trainer(request, pk):
+    trainer = get_object_or_404(Trainer, pk=pk)
+    if request.user != trainer.user:
+        return redirect('trainer_detail', pk=trainer.pk)  # Optional: prevent editing others' profiles
+
+    if request.method == 'POST':
+        form = TrainerForm(request.POST, request.FILES, instance=trainer)
+        if form.is_valid():
+            form.save()
+            return redirect('trainer_detail', pk=trainer.pk)
+    else:
+        form = TrainerForm(instance=trainer)
+    return render(request, 'trainers/trainer_form.html', {'form': form})
+
+# Trainer dashboard
 @login_required
 def trainer_dashboard(request):
     try:
@@ -56,12 +74,10 @@ def trainer_dashboard(request):
     selected_user = None
     days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
-    # Fetch selected user from either POST or GET
     user_id = request.POST.get('user_id') or request.GET.get('user_id')
     if user_id:
         selected_user = get_object_or_404(UserProfile, id=user_id)
 
-        # Convert JSON strings to dicts if needed
         if isinstance(selected_user.diet_plan, str):
             try:
                 selected_user.diet_plan = json.loads(selected_user.diet_plan)
@@ -74,12 +90,10 @@ def trainer_dashboard(request):
             except json.JSONDecodeError:
                 selected_user.workout_plan = {}
 
-    # Handle POST submission to update plans
     if request.method == 'POST' and selected_user:
         if any(key.startswith('diet_') or key.startswith('workout_') for key in request.POST.keys()):
             new_diet = {day: request.POST.get(f'diet_{day}', '') for day in days}
             new_workout = {day: request.POST.get(f'workout_{day}', '') for day in days}
-
             selected_user.diet_plan = new_diet
             selected_user.workout_plan = new_workout
             selected_user.save()

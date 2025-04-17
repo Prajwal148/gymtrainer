@@ -11,7 +11,7 @@ class UserCreateForm(UserCreationForm):
         choices=USER_TYPE_CHOICES,
         widget=forms.RadioSelect,
         initial=False,
-        required=True,  # Make sure the user selects an option
+        required=True,
     )
 
     class Meta:
